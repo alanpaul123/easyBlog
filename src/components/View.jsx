@@ -1,23 +1,36 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { homeBlogAPI } from "../services/allAPI";
+import ViewCard from "./ViewCard";
+
 function View() {
+  const [homeBlogs, setHomeBlogs] = useState([]);
+  console.log(homeBlogs);
+
+  useEffect(() => {
+    getHomeBlogs();
+  }, []);
+
+  const getHomeBlogs = async () => {
+    try {
+      const result = await homeBlogAPI();
+      // console.log(result);
+
+      if (result.status == 200) {
+        setHomeBlogs(result.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div className="vbox">
-        <p className="v">
+        <p className="vi">
           Development <span>16 March 2023</span>
         </p>
-
-        <div className="vc">
-          <p>
-            <img
-              src="https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg"
-              alt=""
-            />
-          </p>
-          <button>Edit</button>
-          <button>Delete</button>
-        </div>
 
         <h2 className="v">
           How to make a Game look more attractive <br /> with new AR and AI
@@ -58,66 +71,11 @@ function View() {
 
       <div className="poppost">
         <h1>Popular Post</h1>
-        <div className="popularboxesb">
-          <div className="popb pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <Link to={"/1/view"}>See More ...</Link>
-          </div>
-
-          <div className="popb pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <Link to={"/2/view"}>See More ...</Link>
-          </div>
-
-          <div className="popb pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <Link to={"/3/view"}>See More ...</Link>
-          </div>
+        <div className="popularboxes">
+          {homeBlogs?.length > 0 &&
+            homeBlogs?.map((blogs) => (
+              <ViewCard displayData={blogs} key={blogs?._id} />
+            ))}
         </div>
       </div>
     </>

@@ -21,12 +21,20 @@ function Footer() {
           </li>
         </ul>
 
-      <div className="socials">
-        <button><i class="fa-brands fa-facebook"></i></button>
-        <button><i class="fa-brands fa-instagram"></i></button>
-        <button><i class="fa-brands fa-twitter"></i></button>
-        <button><i class="fa-brands fa-linkedin"></i></button>
-      </div>
+        <div className="socials">
+          <button>
+            <i class="fa-brands fa fa-facebook"></i>
+          </button>
+          <button>
+            <i class="fa-brands fa fa-instagram"></i>
+          </button>
+          <button>
+            <i class="fa-brands fa fa-twitter"></i>
+          </button>
+          <button>
+            <i class="fa-brands fa fa-linkedin"></i>
+          </button>
+        </div>
       </div>
     </>
   );

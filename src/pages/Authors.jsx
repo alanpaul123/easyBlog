@@ -16,7 +16,7 @@ function Authors() {
 
           <div className="authp">
             <h3>Jack Dane</h3>
-            <Link className="lip" to={"/1/author"}>
+            <Link className="lip" to={"/author"}>
               <p>2 post</p>
             </Link>
           </div>

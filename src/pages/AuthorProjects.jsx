@@ -1,86 +1,110 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { removeBlogAPI, userBlogAPI } from "../services/allAPI";
+import SERVERURL from "../services/serverurl";
+import {
+  addResponseContext,
+  editResponseContext,
+} from "../contexts/ContextAPI";
+import EditBlog from "../components/EditBlog";
 
 function AuthorProjects() {
+  const { addResponse, setAddResponse } = useContext(addResponseContext);
+  const { editResponse, setEditResponse } = useContext(editResponseContext);
+  const [username, setUsername] = useState("");
+
+  const [userBlogs, setuserBlogs] = useState("");
+  const getUserBlogs = async () => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      // api call
+
+      try {
+        const result = await userBlogAPI(reqHeader);
+        if (result.status == 200) {
+          setuserBlogs(result.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  console.log(userBlogs);
+  useEffect(() => {
+    if (sessionStorage.getItem("user")) {
+      setUsername(JSON.parse(sessionStorage.getItem("user")).username);
+    } else {
+      setUsername("");
+    }
+
+    getUserBlogs();
+  }, [addResponse, editResponse]);
+
+  const handleDeleteBlog = async (pid) => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      try {
+        const result = await removeBlogAPI(pid, reqHeader);
+        if (result.status == 200) {
+          getUserBlogs();
+        } else {
+          console.log(result);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
   return (
     <>
-      {/* <div className="authProject">
-        <div className="authrow">
-            <div className="ar">
-                <img src="" alt="" />
-            </div>
-        </div>
-
-        <div className="authrow"></div>
-      </div> */}
-
       <div className="authpost">
-        <h1>Authors post</h1>
-        <Link to={"/1/author/create"} className="btnc">
+        <h1>Welcome {username}</h1>
+        <Link to={"/author-create"} className="btnc">
           Create Post
         </Link>
       </div>
 
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th className="timg" scope="row">
-              <img
-                className="timgs"
-                src="https://media.istockphoto.com/id/1452604857/photo/businessman-touching-the-brain-working-of-artificial-intelligence-automation-predictive.jpg?s=612x612&w=0&k=20&c=GkAOxzduJbUKpS2-LX_l6jSKtyhdKlnPMo2ito4xpR4="
-                alt=""
-              />
-            </th>
-            <td className="tdesc">
-              <p>The wonders AI Has in stor......</p>
-            </td>
-            <td className="tView">
-              <Link to={`/1/view`} className="p">
-                <p>View</p>
-              </Link>
-            </td>
-            <td className="tedit">
-              <Link to={`/1/author/edit`} className="btnp">Edit</Link>
-            </td>
-            <td className="tedit">
-              <button className="btnd">Delete</button>
-            </td>
-          </tr>
+      <div className="popularboxesu">
+        {userBlogs?.length > 0 ? (
+          userBlogs.map((blog) => (
+            <div className="userblog">
+              <img src={`${SERVERURL}/uploads/${blog?.blogImg}`} alt="" />
 
-          <tr>
-            <th className="timg" scope="row">
-              <img
-                className="timgs"
-                src="https://www.holidaymonk.com/wp-content/uploads/2023/05/Travel-Guide-to-Vietnam.jpg"
-                alt=""
-              />
-            </th>
-            <td className="tdesc">
-              <p>Vietnam is the best place ......</p>
-            </td>
-            <td className="tView">
-              <Link to={`/1/view`} className="p">
-                <p>View</p>
-              </Link>
-            </td>
-            <td className="tedit">
-              <button className="btnp">Edit</button>
-            </td>
-            <td className="tedit">
-              <button className="btnd">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              <p className="s1">
+                <span className="uc">{blog.authorName}</span> {blog.date}
+              </p>
+
+              <p className="s2">{blog.title}</p>
+              <p>{blog.content.substr(0, 30)}...</p>
+
+              <div className="d-flex">
+                <EditBlog blog={blog} />
+
+                <button
+                  onClick={() => handleDeleteBlog(blog?._id)}
+                  className="btn btn-danger ubd"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="close text-danger fs-5 m-5">Its not Found</div>
+        )}
+      </div>
     </>
   );
 }

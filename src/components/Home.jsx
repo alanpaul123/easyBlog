@@ -1,6 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { homeBlogAPI } from "../services/allAPI";
+import SERVERURL from "../services/serverurl";
+import ViewCard from "./ViewCard";
+import { Link } from "react-router-dom";
 
 function Home() {
+  const [homeBlogs, setHomeBlogs] = useState([]);
+  console.log(homeBlogs);
+
+  useEffect(() => {
+    getHomeBlogs();
+  }, []);
+
+  const getHomeBlogs = async () => {
+    try {
+      const result = await homeBlogAPI();
+      // console.log(result);
+
+      if (result.status == 200) {
+        setHomeBlogs(result.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <>
       <div className="home">
@@ -15,11 +39,22 @@ function Home() {
             personal and possible cute.For example ,home robots will overcome
             navigation,direction
           </p>
-          <button>ReadMore</button>
+          {sessionStorage.getItem("token") ? (
+            <Link className="btn btn-primary aread" to={"view-blog"}>
+              ReadMore
+            </Link>
+          ) : (
+            ""
+          )}
         </div>
         <div className="homeimg">
-          <img
+          {/* <img
             src="https://www.simplilearn.com/ice9/free_resources_article_thumb/Types_of_Artificial_Intelligence.jpg"
+            alt=""
+          /> */}
+
+          <img
+            src="https://www.zabala.eu/wp-content/uploads/2023/11/Artificial-intelligente-and-consultancy-450x253.jpg"
             alt=""
           />
         </div>
@@ -50,75 +85,30 @@ function Home() {
             that makes life easier.
           </p>
 
-          <button>Read More</button>
+          {sessionStorage.getItem("token") ? (
+            <Link to={"view-blog"} className="btn btn-danger bdan m-2 ">
+              Read More
+            </Link>
+          ) : (
+            ""
+          )}
         </div>
       </div>
 
-      <div className="popularpost">
-        <h1>Popular Post</h1>
+      {sessionStorage.getItem("token") ? (
+        <div className="popularpost">
+          <h1>Popular Post</h1>
 
-        <div className="popularboxes">
-          <div className="pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <a href="#">Read More ...</a>
-          </div>
-
-          <div className="pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <a href="#">Read More ...</a>
-          </div>
-
-          <div className="pop">
-            <img
-              src="https://www.billboard.com/wp-content/uploads/media/kanye-west-iheartradio-music-festival-billboard-650.jpg?w=650"
-              alt=""
-            />
-
-            <p>
-              <span className="type">Travel</span>13 March 2023
-            </p>
-            <h2>
-              Who is the best singer on Chart? <br />
-              Knows him?
-            </h2>
-            <p className="q">
-              Chart by Billboard which ranks the all-time greatest....
-            </p>
-
-            <a href="#">Read More ...</a>
+          <div className="popularboxes">
+            {homeBlogs?.length > 0 &&
+              homeBlogs?.map((blogs) => (
+                <ViewCard displayData={blogs} key={blogs?._id} />
+              ))}
           </div>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
     </>
   );
 }
